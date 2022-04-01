@@ -1,0 +1,75 @@
+﻿
+<ListControl IsLoading="IsLoading" Models="Models" Title="Assets" TModel="AssetViewModel">
+    <ListItems Context="models">
+
+        <table class="table table-table-bordered table-hover">
+            <thead>
+                <tr class="text-md-center">
+                    <th class="border">Image</th>
+                    <th class="border">Name</th>
+                    <th class="border">Color</th>
+                    <th class="border">S/N</th>
+                    <th class="border">Purchase Date</th>
+                    <th class="border">Purchase Price</th>
+                    <th class="border">In-Service</th>
+                    <th class="border">End of Service</th>
+                    <th class="border">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var l in models.OrderBy(a => a.PurchasePrice))
+                {
+                    <tr class="text-md-center">
+                        <td class="border" width="15%">
+                            <Modal Title="@l.Name">
+                                <ModalButtonContent>
+                                    <img class="img-thumbnail" width="50%" title="@l.Name" src="@l.ImageUrl" alt="@l.Name" />
+                                </ModalButtonContent>
+
+                                <ModalBodyContent>
+                                    <img class="img-fluid" width="100%" title="@l.Name" src="@l.ImageUrl" alt="@l.Name" />
+                                </ModalBodyContent>
+                            </Modal>
+                        </td>
+                        <td class="border">@l.Name</td>
+                        <td class="border">@l.Color</td>
+                        <td class="border">@l.SerialNumber</td>
+                        <td class="border">@l.PurchaseDate.ToShortDateString()</td>
+                        <td class="border">$@l.PurchasePrice</td>
+                        <td class="border">@l.InServiceDate?.ToShortDateString()</td>
+                        <td class="border">@l.EndOfServiceDate?.ToShortDateString()</td>
+
+                        <td class="border">
+                            <a href="javascript:void(0)" @onclick="@(() => View(l.Id))">Edit</a>
+                            |
+                            <a href="javascript:void(0)" @onclick="@(() => Delete(l.Id))">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </ListItems>
+</ListControl>
+
+@code {
+    [Parameter] public EventCallback<string> OnView { get; set; }
+
+    [Parameter] public EventCallback<string> OnDelete { get; set; }
+
+    [Parameter] public IEnumerable<AssetViewModel> Models { get; set; } = Enumerable.Empty<AssetViewModel>();
+
+    [Parameter] public bool IsLoading { get; set; } = false;
+
+    void View(string id)
+    {
+        if (OnView.HasDelegate)
+            OnView.InvokeAsync(id);
+    }
+    void Delete(string id)
+    {
+        if (OnDelete.HasDelegate)
+            OnDelete.InvokeAsync(id);
+    }
+}

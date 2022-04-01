@@ -1,0 +1,54 @@
+﻿
+<ListControl IsLoading="IsLoading" Models="Models" Title="Stations" TModel="StationViewModel">
+    <ListItems Context="models">
+
+        <table class="table table-table-bordered table-hover">
+            <thead>
+                <tr class="text-md-center">
+                    <th class="border">Name</th>
+                    <th class="border">Address</th>
+                    <th class="border">City/State</th>
+                    <th class="border">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var l in models)
+                {
+                    <tr class="text-md-center">
+                        <td class="border">@l.Name</td>
+                        <td class="border">@l.StreetNumber @l.StreetName</td>
+                        <td class="border">@l.City, @l.State</td>
+                        <td class="border">
+                            <a href="javascript:void(0)" @onclick="@(() => View(l.Id))">Edit</a>
+                            |
+                            <a href="javascript:void(0)" @onclick="@(() => Delete(l.Id))">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </ListItems>
+</ListControl>
+
+@code {
+    [Parameter] public EventCallback<string> OnView { get; set; }
+
+    [Parameter] public EventCallback<string> OnDelete { get; set; }
+
+    [Parameter] public IEnumerable<StationViewModel> Models { get; set; } = Enumerable.Empty<StationViewModel>();
+
+    [Parameter] public bool IsLoading { get; set; } = false;
+
+    void View(string id)
+    {
+        if (OnView.HasDelegate)
+            OnView.InvokeAsync(id);
+    }
+    void Delete(string id)
+    {
+        if (OnDelete.HasDelegate)
+            OnDelete.InvokeAsync(id);
+    }
+}

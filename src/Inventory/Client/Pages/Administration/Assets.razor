@@ -1,0 +1,78 @@
+﻿@page "/Configurations/Assets"
+@inject HttpClient Http
+@inject IJsonSerializerOptions Opts
+@inject ILogger<Assets> _logger
+
+<div class="container-md">
+    <AssetForm FormTitle="Add/Update Asset" Model="Model" OnSaved="Saved">
+
+    </AssetForm>
+
+    <AssetList OnView="Find" OnDelete="Delete" IsLoading="Model.IsLoading" Models="Model.Models">
+
+    </AssetList>
+</div>
+
+@code {
+    AssetViewModel Model { get; set; } = new AssetViewModel();    
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Http != null)            
+                await Get();
+
+            Model.PropertyChanged += (e, v) =>
+            {
+                InvokeAsync(() => StateHasChanged());
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+    }
+
+    async Task Saved(AssetViewModel m)
+    {
+        var result = await Http.PostAsJsonAsync<AssetViewModel>("api/Assets", m);
+
+        if (result.IsSuccessStatusCode)
+        {
+            Model = new AssetViewModel();
+
+            await Get();
+        }
+    }
+
+    async Task Find(string id)
+    {
+        var model = await Http.GetFromJsonAsync<AssetViewModel>($"api/Assets/{id}");
+
+        if (model != null)
+            Model.View(model);
+    }
+
+    async Task Get()
+    {
+        Model.Loading();
+
+        Model.ClearModels();
+
+        var models = await Http.GetFromJsonAsync<AssetViewModel[]>("api/Assets");
+
+        if (models != null)        
+            Model.SetModels(models);
+
+        Model.NotLoading();
+    }
+
+    async void Delete(string id)
+    {
+        var result = await Http.DeleteAsync($"api/Assets/{id}");    
+
+        if (result.IsSuccessStatusCode)        
+            await Get();        
+    }
+}

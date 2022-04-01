@@ -1,0 +1,84 @@
+﻿
+<FormControl ClearForm="ClearForm" Model="Model" ValidSubmit="Submit" TModel="AssetViewModel" SubmitButtonText="Save">
+
+    <InputContent>
+
+        <div>
+            <h3>@FormTitle</h3>
+        </div>
+
+        <InputText type="hidden" @bind-Value="@Model.Id"></InputText>
+
+        <div class="input-group">
+            <span class="input-group-text">Name</span>
+            <InputText class="form-control" DisplayName="Name" @bind-Value="@Model.Name"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Color</span>
+            <InputText class="form-control" DisplayName="Color" @bind-Value="@Model.Color"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Purchase Date</span>
+            <InputDate class="form-control" DisplayName="Purchase Date" @bind-Value="@Model.PurchaseDate"></InputDate>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Purchase Price</span>
+            <InputText class="form-control" DisplayName="Purchase Price" @bind-Value="@Model.PurchasePrice"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Serialnumber</span>
+            <InputText class="form-control" DisplayName="Serialnumber" @bind-Value="@Model.SerialNumber"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">In-Service Date</span>
+            <InputDate class="form-control" DisplayName="In-Service Date" @bind-Value="@Model.InServiceDate"></InputDate>
+        </div>
+
+
+        <div class="input-group">
+            <span class="input-group-text">End Of Service Date</span>
+            <InputDate class="form-control" DisplayName="End Of Service Date" @bind-Value="@Model.EndOfServiceDate"></InputDate>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Asset Image</span>
+            <InputFile OnChange="OnFileInputChanged" class="form-control"></InputFile>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="input-group">
+                <span class="input-group-text">Image Url</span>
+                <InputText class="form-control" DisplayName="Image Url" @bind-Value="@Model.ImageUrl"></InputText>
+            </div>
+        }
+
+    </InputContent>
+</FormControl>
+
+@code {
+    [Parameter] public string? FormTitle { get; set; }
+
+    [Parameter] public EventCallback<AssetViewModel> OnSaved { get; set; }
+
+    [Parameter] public AssetViewModel Model { get; set; } = new AssetViewModel();
+
+    void ClearForm() => Model = new AssetViewModel();
+
+    void Submit()
+    {
+        if (OnSaved.HasDelegate)
+            OnSaved.InvokeAsync(Model);
+    }
+
+    async Task OnFileInputChanged(InputFileChangeEventArgs args)
+    {
+        if (args != null)
+            await Model.Upload(args.File);
+    }
+}

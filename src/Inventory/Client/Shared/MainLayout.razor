@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider Provider
+
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+
+            <main>
+                <div class="top-row px-4">
+                    <LoginDisplay />
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
+        </div>
+    </Authorized>
+    <Authorizing>
+        Authorizing...
+    </Authorizing>
+
+</AuthorizeView>
+
+@code {
+    AuthenticationState? State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        State = await Provider.GetAuthenticationStateAsync();
+
+        if (State.User.Identity != null && !State.User.Identity.IsAuthenticated)
+        {
+            Nav.NavigateTo("/Identity/Account/Login", true);
+        }
+    }
+}

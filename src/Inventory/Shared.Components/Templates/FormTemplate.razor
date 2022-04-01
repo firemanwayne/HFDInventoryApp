@@ -1,0 +1,20 @@
+﻿
+@code{
+    [Parameter] public bool IsLoading { get; set; }
+
+    [Parameter] public RenderFragment? LoadingContent { get; set; }
+
+    [Parameter] public RenderFragment? FormContent { get; set; }
+}
+
+@if (IsLoading && LoadingContent != null)
+{
+    @LoadingContent
+}
+else
+{
+    if(FormContent != null)
+    {
+        @FormContent
+    }
+}

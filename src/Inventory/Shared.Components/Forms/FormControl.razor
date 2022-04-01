@@ -1,0 +1,45 @@
+﻿@typeparam TModel where TModel : ViewModelBase<TModel>
+
+<FormTemplate IsLoading="Model == null">
+
+    <LoadingContent>
+
+    </LoadingContent>
+    <FormContent>
+
+        <EditForm Model="Model" OnValidSubmit="SubmitForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @if (InputContent != null && Model != null)
+            {
+                @InputContent(Model)
+            }
+            <button type="submit" class="btn btn-outline-danger">@SubmitButtonText</button>
+            
+            <button @onclick="ClearForm" type="button" class="btn btn-outline-primary">Clear Form</button>
+        </EditForm>
+    </FormContent>
+</FormTemplate>
+
+@code {
+    [Parameter] public object? Id { get; set; }
+
+    [Parameter] public bool SpinnerVisible { get; set; }
+
+    [Parameter] public TModel? Model { get; set; }
+
+    [Parameter] public string SubmitButtonText { get; set; } = "";
+
+    [Parameter] public EventCallback<TModel> ValidSubmit { get; set; }
+
+    [Parameter] public EventCallback ClearForm { get; set; }
+
+    [Parameter] public RenderFragment<TModel>? InputContent { get; set; }
+
+    void SubmitForm()
+    {
+        if (ValidSubmit.HasDelegate)
+            ValidSubmit.InvokeAsync(Model);
+    }
+}

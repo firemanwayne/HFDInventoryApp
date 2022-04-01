@@ -1,0 +1,67 @@
+﻿
+<button type="button" @onclick="ToggleModal">
+    @ModalButtonContent    
+</button>
+
+<div class="modal @CssClass" style="@Style">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" @onclick="ToggleModal"></button>
+            </div>
+
+            <div class="modal-body">
+                @if (ModalBodyContent != null)
+                {
+                    @ModalBodyContent
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@if (ShowBackDrop)
+{
+    <div class="modal-backdrop show"></div>
+}
+
+@code {
+
+    string? CssClass { get; set; }
+
+    string? Style{ get; set; }
+
+    string? Role{ get; set; }
+
+    string? AriaModal { get; set; }
+
+    bool ShowBackDrop { get; set; }
+
+    [Parameter] public string? Title { get; set; }
+
+    [Parameter] public RenderFragment? ModalButtonContent { get; set; }
+
+    [Parameter] public RenderFragment? ModalBodyContent { get; set; }    
+
+    void ToggleModal()
+    {
+        if (CssClass == "show")
+        {
+            CssClass = "";
+            Style = "display: none;";
+            AriaModal = "aria-hidden: true";
+            ShowBackDrop = false;
+        }
+        else
+        {
+            CssClass = "show";
+            Style = "display: block;";
+            Role = "dialog";
+            AriaModal = "aria-modal: true";
+            ShowBackDrop = true;
+        }
+    }    
+}

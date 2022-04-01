@@ -1,0 +1,79 @@
+﻿@page "/Configurations/Stations"
+@inject HttpClient Http
+@inject IJsonSerializerOptions Opts
+@inject ILogger<Stations> _logger
+
+<div class="container-md">
+    <StationForm FormTitle="Add/Update Station" Model="Model" OnSaved="Saved">
+
+    </StationForm>
+
+    <StationList OnView="Find" OnDelete="Delete" IsLoading="Model.IsLoading" Models="Model.Models">
+
+    </StationList>
+</div>
+
+@code {
+
+    StationViewModel Model { get; set; } = new StationViewModel();    
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Http != null)            
+                await Get();
+
+            Model.PropertyChanged += (e, v) =>
+            {
+                InvokeAsync(() => StateHasChanged());
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+    }    
+
+    async Task Saved(StationViewModel m)
+    {
+        var result = await Http.PostAsJsonAsync<StationViewModel>("api/Stations", m);
+
+        if (result.IsSuccessStatusCode)
+        {
+            Model = new StationViewModel();
+
+            await Get();
+        }
+    }
+
+    async Task Find(string id)
+    {
+        var model = await Http.GetFromJsonAsync<StationViewModel>($"api/Stations/{id}");
+
+        if (model != null)
+            Model.View(model);
+    }
+
+    async Task Get()
+    {
+        Model.Loading();
+
+        Model.ClearModels();
+
+        var models = await Http.GetFromJsonAsync<StationViewModel[]>("api/Stations");
+
+        if (models != null)        
+            Model.SetModels(models);
+
+        Model.NotLoading();
+    }
+
+    async void Delete(string id)
+    {
+        var result = await Http.DeleteAsync($"api/Stations/{id}");    
+
+        if (result.IsSuccessStatusCode)        
+            await Get();        
+    }
+}

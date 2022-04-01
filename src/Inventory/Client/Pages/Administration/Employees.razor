@@ -1,0 +1,88 @@
+﻿@page "/Configuration/Employees"
+@inject HttpClient Http
+@inject IJsonSerializerOptions Opts
+@inject ILogger<Employees> _logger
+
+<ul>    
+
+    <li>
+        <NavLink class="nav-link" href="/Identity/Account/Register">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> Add New Employee
+        </NavLink>
+    </li>
+
+</ul>
+
+<ListControl IsLoading="IsLoading" Models="Models" Title="Employees" TModel="EmployeeViewModel">
+    <ListItems Context="models">
+
+        <table class="table table-table-bordered table-hover">
+            <thead>
+                <tr class="text-md-center">
+                    <th class="border">Name</th>
+                    <th class="border">Rank</th>
+                    <th class="border">Payroll</th>
+                    <th class="border">Station</th>
+                    <th class="border">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var l in models)
+                {
+                    <tr class="text-md-center">
+                        <td class="border">@l.LastName, @l.FirstName</td>
+                        <td class="border">@l.Rank</td>
+                        <td class="border">@l.PayrollNumber</td>
+                        <td class="border">@l.StationName</td>
+
+                        <td class="border">
+                            <a href="javascript:void(0)" @onclick="@(() => View(l.Id))">Edit</a>
+                            |
+                            <a href="javascript:void(0)" @onclick="@(() => Delete(l.Id))">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </ListItems>
+</ListControl>
+
+@code {
+    [Parameter] public EventCallback<string> OnView { get; set; }
+
+    [Parameter] public EventCallback<string> OnDelete { get; set; }
+
+    [Parameter] public IEnumerable<EmployeeViewModel> Models { get; set; } = Enumerable.Empty<EmployeeViewModel>();
+
+    [Parameter] public bool IsLoading { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var models = await Http.GetFromJsonAsync<IEnumerable<EmployeeViewModel>>("api/Employees", Opts.JsonOptions);
+
+            if(models != null)
+            {
+                Models = models;
+            }
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+    }
+
+    void View(string id)
+    {
+        if (OnView.HasDelegate)
+            OnView.InvokeAsync(id);
+    }
+    void Delete(string id)
+    {
+        if (OnDelete.HasDelegate)
+            OnDelete.InvokeAsync(id);
+    }
+}

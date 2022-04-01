@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+<AuthorizeView>
+    <Authorized>
+            <RadzenProfileMenu Style="background-color:inherit;cursor:pointer;" >
+                <Template>
+                    <RadzenGravatar Style="cursor:inherit;" Email="@context.User.Identity.Name"></RadzenGravatar>
+                </Template>
+                <ChildContent>
+                    <RadzenProfileMenuItem Text="Account" Path="@(Navigation.BaseUri + "identity/account/manage/index")" Icon="manage_accounts"></RadzenProfileMenuItem>
+                    <RadzenProfileMenuItem Text="Change Email" Path="@(Navigation.BaseUri + "identity/account/manage/Email")" Icon="email"></RadzenProfileMenuItem>
+                    <RadzenProfileMenuItem Text="Change Password" Path="@(Navigation.BaseUri + "identity/account/manage/ChangePassword")" Icon="password"></RadzenProfileMenuItem>
+                    <RadzenProfileMenuItem Text="Sign Out" Path="@(Navigation.BaseUri + "identity/account/logout")" Icon="logout"></RadzenProfileMenuItem>
+                </ChildContent>
+            </RadzenProfileMenu>
+    </Authorized>
+    <NotAuthorized>
+        <a href="authentication/register">Register</a>
+        <a href="authentication/login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>

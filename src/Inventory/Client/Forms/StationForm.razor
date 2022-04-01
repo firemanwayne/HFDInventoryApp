@@ -1,0 +1,59 @@
+﻿<FormControl ClearForm="ClearForm" Model="Model" ValidSubmit="Submit" TModel="StationViewModel" SubmitButtonText="Save">
+
+    <InputContent>
+
+        <div>
+            <h3>@FormTitle</h3>
+        </div>
+
+        <InputText type="hidden" @bind-Value="@Model.Id"></InputText>
+
+        <div class="input-group">
+            <span class="input-group-text">Name</span>
+            <InputText class="form-control" DisplayName="Name" @bind-Value="@Model.Name"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Street Number</span>
+            <InputNumber class="form-control" DisplayName="Street Number" @bind-Value="@Model.StreetNumber"></InputNumber>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">Street Name</span>
+            <InputText class="form-control" DisplayName="Street Name" @bind-Value="@Model.StreetName"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">City</span>
+            <InputText class="form-control" DisplayName="City" @bind-Value="@Model.City"></InputText>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text">State</span>
+            <InputSelect class="form-select" DisplayName="State" @bind-Value="@Model.State">
+                <option value="@string.Empty">Select State</option>
+                @foreach (var s in Model.States)
+                {
+                    <option value="@s">@s</option>
+                }
+            </InputSelect>
+        </div>
+
+    </InputContent>
+</FormControl>
+
+@code {
+    [Parameter] public string? FormTitle { get; set; }
+
+    [Parameter] public EventCallback<StationViewModel> OnSaved { get; set; }
+
+    [Parameter] public StationViewModel Model { get; set; } = new StationViewModel();
+
+     void Submit()
+    {
+        if (OnSaved.HasDelegate)
+            OnSaved.InvokeAsync(Model);
+    }
+
+    void ClearForm() => Model = new StationViewModel();
+}

@@ -1,0 +1,74 @@
+﻿@inject BrowserService browserService
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Inventory</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+     <nav class="flex-column">
+        <div>
+            <RadzenImage Visible="@HideSidebarImage" Style="max-height:270px" Path="http://127.0.0.1:10000/devstoreaccount1/content/logos/RescueTRT%20Color%20No%20Background.png"></RadzenImage>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="material-icons mr-2">home</span> Home
+            </NavLink>
+        </div>        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Configurations">
+                <span class="material-icons mr-2">settings</span> Configuration
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="maintenancerequests">
+                <span class="material-icons mr-2">article</span> Maintenance Requests
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="reports/exceptions">
+                <span class="material-icons mr-2">report</span> Exception Reports
+            </NavLink>
+        </div>
+    </nav>
+
+    <div>
+        Height: @dimensions?.Height
+        Width: @dimensions?.Width
+    </div>
+</div>
+
+@code {
+    bool collapseNavMenu { get; set; } = true;
+
+    string NavMenuCssClass => collapseNavMenu ? "collapse" : "";
+
+    BrowserDimension? dimensions;
+
+    bool hideSidebarImage = true;
+
+    bool HideSidebarImage 
+    {
+        get => hideSidebarImage;
+        set
+        {
+            hideSidebarImage = value;           
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+       dimensions = await browserService.GetDimensions();
+    }
+
+    void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+
+        hideSidebarImage = collapseNavMenu;        
+    }
+}
